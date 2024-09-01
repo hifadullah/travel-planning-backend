@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose"; // Ensure this is imported only once
+import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import authRoute from "./router/auth.js";
 import tourRoute from "./router/tours.js";
@@ -21,13 +21,18 @@ app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
 
-// MongoDB connection function
+mongoose.set("strictQuery", false);
+
 async function connect() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
     console.log("MongoDB Database Connected");
   } catch (err) {
-    console.log("MongoDB Database Connection Failed:", err);
+    console.log("MongoDB Database Connection Failed");
   }
 }
 
