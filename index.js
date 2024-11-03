@@ -17,34 +17,42 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
+app.get('/', (req, res) => {
+  res.send('Hello, world!');
+});
+
 mongoose.set("strictQuery", false);
-const connect = async () => {
-   try {
-       await mongoose.connect(process.env.MONGO_URI,{
-         useNewUrlParser:true,
-         useUnifiedTopology:true
-       });
 
-       console.log("MongoDB database connected");
-     } catch (err) {
-       console.log("MongoDB database connection failed");
-       
-     }
-  };
-  
+async function connect() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
+    console.log("MongoDB Database Connected");
+  } catch (err) {
+    console.log("MongoDB Database Connection Failed");
+  }
+}
 
 const corsOptions = {
-  origin: 'http://localhost:4000', // Your frontend URL
+  origin: true,
   credentials: true,
 };
-app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use('/tours', tourRoute);
-
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/tours", tourRoute);
+app.use("/api/v1/search", searchRoute);
+app.use("/api/v1/users", userRoute);
+app.use("/api/v1/review", reviewRoute);
+app.use("/api/v1/booking", bookingRoute);
+app.use("/api/v1/contact", contactRoute);
+app.use("/api/v1/blogs", blogRoute);
+app.use("/api/v1/comment", commentRoute);
 
 app.listen(port, () => {
   connect();
