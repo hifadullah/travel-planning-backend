@@ -1,21 +1,5 @@
 import Tour from "../models/Tour.js";
 
-const API_URL = 'http://localhost:4000/api/v1';
-
-// Function to get tours
-export const getTours = async () => {
-  try {
-    // Making a GET request to the /tours endpoint
-    const response = await axios.get(`${API_URL}/tours`);
-    // Returning the data from the response
-    return response.data;
-  } catch (error) {
-    // Logging any errors that occur
-    console.error('Error fetching tours:', error);
-  }
-};
-
-
 // create new tour
 export const createTour = async (req, res) => {
   try {
@@ -33,10 +17,11 @@ export const createTour = async (req, res) => {
 };
 
 // update tour
-export const updateTour = async(req, res) => {
+export const updateTour = async (req, res) => {
   const id = req.params.id;
   try {
-    const updatedTour = await Tour.findByIdAndUpdate(id,
+    const updatedTour = await Tour.findByIdAndUpdate(
+      id,
       { $set: req.body },
       { new: true }
     );
@@ -51,91 +36,62 @@ export const updateTour = async(req, res) => {
   }
 };
 
-
-// Delete tour
+// delete tour
 export const deleteTour = async (req, res) => {
   const id = req.params.id;
   try {
     await Tour.findByIdAndDelete(id);
-   
     res.status(200).json({
       success: true,
       message: "Tour deleted successfully",
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: "failed to delete",
-    });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to delete tour" });
   }
 };
+
 // get single tour
 export const getSingleTour = async (req, res) => {
   const id = req.params.id;
   try {
     const tour = await Tour.findById(id);
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        message: "Tour not found",
+      });
+    }
     res.status(200).json({
       success: true,
       message: "Tour retrieved successfully",
       data: tour,
     });
-    
   } catch (err) {
     console.error(err);
-    res.status(404).json({ success: false, message: "Failed to get the tour" });
+    res.status(500).json({ success: false, message: "Failed to get the tour" });
   }
 };
 
 // get all tours
 export const getAllTour = async (req, res) => {
   try {
-    const tour = await Tour.find({})
-    
+    const tours = await Tour.find();
     res.status(200).json({
       success: true,
+      count: tours.length,
       message: "Tours retrieved successfully",
-      data: tour,
+      data: tours,
     });
   } catch (err) {
-    res.status(404).json({
-      success: false,
-      message: "Failed to get tours"
-   });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to get tours" });
   }
 };
 
-//get tour by search 
-export const getTourBySearch = async(requ,res)=>{
-
-
-    const city = new RegExp( req.query.city, 'i')
-    const distance = parseInt(req.query.distance)
-    const maxGroupSize = parseInt(req.query.maxGroupSize)
-
-  try { 
-
-    const tours = await Tour.find({ city, distance:{gte:distance}
-    maxGroupSize:{$gte:maxGroupSize} })
-
-    res.statuss(200).json({
-        success: true,
-        message: "successful",
-        data: tours,
-    });
-  } catch (err) {
-    res.status(404).json({
-      success: false,
-      message: "not founf"
-   });
-  }
-  
-
-    
-  
-
 export const getFeaturedTour = async (req, res) => {
   try {
-    const tours = await Tour.find({ featured: true }).limit(8);
+    const tours = await Tour.find({ featured: true });
     res.status(200).json({
       success: true,
       message: "Tours retrieved successfully",
