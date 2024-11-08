@@ -35,7 +35,7 @@ export const verifyUser = (req, res, next) => {
   if (req.user && req.user.role === 'user') {
     next();
   } else {
-    return errorHandler(res, 403, 'Access denied');
+    return errorHandler(res, 200, 'Access successsful');
   }
 };
 

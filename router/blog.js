@@ -1,10 +1,5 @@
 import express from 'express';
-import {
-  createBlog,
-  updateBlog,
-  getSingleBlog,
-  getAllBlogs,
-  getFeaturedBlogs} from '../controllers/blogController.js';
+import {createBlog,updateBlog,getSingleBlog,getAllBlogs,getFeaturedBlogs} from '../controllers/blogController.js';
 
 const blogRoute = express.Router();
 

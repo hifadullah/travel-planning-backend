@@ -26,10 +26,10 @@ export const registerUser = async (req, res) => {
     const newUser = new User({ username, fullName, email, password: hashedPassword, photo });
     await newUser.save();
 
-    res.status(201).json({ message: 'User registered successfully' });
+    return res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to register user' });
+    console.error('Registration error:', error.message);
+    return res.status(500).json({ message: 'Failed to register user' });
   }
 };
 
@@ -51,9 +51,13 @@ export const loginUser = async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '15d' });
+    const token = jwt.sign(
+      { userId: user._id, role: 'user' },
+      process.env.JWT_SECRET,
+      { expiresIn: '15d' }
+    );
 
-    res.status(200).json({
+    return res.status(200).json({
       id: user._id,
       username: user.username,
       email: user.email,
@@ -62,8 +66,8 @@ export const loginUser = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to login' });
+    console.error('Login error:', error.message);
+    return res.status(500).json({ message: 'Failed to login' });
   }
 };
 
